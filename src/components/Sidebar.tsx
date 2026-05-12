@@ -29,6 +29,7 @@ import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 import { type Screen, type AppMode } from '../types';
 import { useNavigate } from 'react-router-dom';
+import { AlabaIcon } from '../lib/utils';
 
 interface SidebarProps {
   currentScreen: Screen;
@@ -99,8 +100,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
     >
       <div className="flex items-center h-16 px-6 gap-3 shrink-0">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg">
-          <div className="w-4 h-4 rounded-sm bg-white" />
+        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg overflow-hidden border border-white/10">
+          <AlabaIcon className="w-full h-full" />
         </div>
         {isOpen && (
           <div className="flex flex-col">

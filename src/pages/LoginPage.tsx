@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
+import { AlabaIcon } from '../lib/utils';
 import { toast } from 'sonner';
 import { AccountService } from '../services/api';
 
@@ -103,8 +104,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, isAdmin = false }) => {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-10">
-            <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-on-primary shadow-xl shadow-primary/20">
-              <Cpu size={24} />
+            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary shadow-xl shadow-primary/20 overflow-hidden">
+               <AlabaIcon className="w-full h-full" />
             </div>
             <span className="text-2xl font-display font-black tracking-tighter uppercase text-on-surface">Alaba</span>
           </div>
@@ -153,6 +154,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, isAdmin = false }) => {
           className="w-full max-w-md space-y-10"
         >
           <header className="text-center lg:text-left space-y-3">
+            <div className="flex justify-center lg:justify-start mb-4 lg:hidden">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center p-0 overflow-hidden">
+                <AlabaIcon className="w-full h-full" />
+              </div>
+            </div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest mb-2">
               {isAdmin ? "Admin Gateway" : "User Portal"}
             </div>
