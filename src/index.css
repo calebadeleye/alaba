@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&family=Manrope:wght@200..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+
+  --color-surface: var(--surface);
+  --color-on-surface: var(--on-surface);
+  --color-sidebar: var(--sidebar);
+  --color-on-sidebar: var(--on-sidebar);
+  --color-surface-container: var(--surface-container);
+  --color-surface-variant: var(--surface-variant);
+  --color-on-surface-variant: var(--on-surface-variant);
+  
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  --color-error: var(--error);
+  --color-on-error: var(--on-error);
+  --color-error-container: var(--error-container);
+  --color-on-error-container: var(--on-error-container);
+
+  --radius-md: var(--radius-base);
+  --radius-xl: var(--radius-extra);
+  --radius-2xl: var(--radius-double);
+}
+
+:root {
+  --radius-base: 1rem;
+  --radius-extra: 1.5rem;
+  --radius-double: 2rem;
+
+  --primary: #82d3e0;
+  --on-primary: #00363d;
+  --primary-container: #004f58;
+  --on-primary-container: #9eefff;
+
+  --secondary: #b1cbd1;
+  --on-secondary: #1c3439;
+  --secondary-container: #334a50;
+  --on-secondary-container: #cde7ee;
+
+  --tertiary: #b0c9e3;
+  --on-tertiary: #193247;
+  --tertiary-container: #32495f;
+  --on-tertiary-container: #d5e4f7;
+
+  --surface: #0e1416;
+  --on-surface: #dee3e4;
+  --sidebar: #050809;
+  --on-sidebar: rgba(222, 227, 228, 0.7);
+  --surface-container: #1a2124;
+  --surface-variant: #40484c;
+  --on-surface-variant: #c0c8cc;
+
+  --outline: #8a9296;
+  --outline-variant: #454d52;
+
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --error-container: #93000a;
+  --on-error-container: #ffdad6;
+}
+
+.light {
+  --primary: #003544;
+  --on-primary: #ffffff;
+  --primary-container: #d6f2fa;
+  --on-primary-container: #001f29;
+  
+  --secondary: #4a6267;
+  --on-secondary: #ffffff;
+  --secondary-container: #cde7ee;
+  --on-secondary-container: #051f23;
+
+  --tertiary: #22323e;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #d5e4f7;
+  --on-tertiary-container: #0e1d2a;
+
+  --surface: #f7f9ff;
+  --on-surface: #181c20;
+  --sidebar: #003544;
+  --on-sidebar: rgba(255, 255, 255, 0.7);
+  --surface-container: #ffffff;
+  --surface-variant: #dfe4e7;
+  --on-surface-variant: #40484c;
+  
+  --outline: #70787d;
+  --outline-variant: #c0c8cc;
+
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  --on-error-container: #410002;
+}
+
+.gentle {
+  --primary: #4a4bd7;
+  --on-primary: #fbf7ff;
+  --primary-container: #7073ff;
+  --on-primary-container: #000000;
+  
+  --secondary: #5d5d72;
+  --on-secondary: #fbf7ff;
+  --secondary-container: #e2e0f9;
+  --on-secondary-container: #505064;
+
+  --tertiary: #745479;
+  --on-tertiary: #fff7fb;
+  --tertiary-container: #f5cdf9;
+  --on-tertiary-container: #604266;
+
+  --surface: #fff8f5;
+  --on-surface: #38312c;
+  --sidebar: #fdf1eb;
+  --on-sidebar: #675d57;
+  --surface-container: #f7ece5;
+  --surface-variant: #ede0d8;
+  --on-surface-variant: #675d57;
+  
+  --outline: #837972;
+  --outline-variant: #bcb0a8;
+
+  --error: #a8364b;
+  --on-error: #fff7f7;
+  --error-container: #f97386;
+  --on-error-container: #6e0523;
+
+  --radius-base: 1rem;
+  --radius-extra: 2rem;
+  --radius-double: 3rem;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-sans antialiased transition-colors duration-300;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-outline-variant/50 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-outline/50;
+}
