@@ -126,7 +126,7 @@ mkdir -p /var/log/alaba
 # ----------------------------
 echo "Downloading ALABA Application..."
 cd /var/www
-git clone https://github.com/naitalk/alaba-cluster.git alaba || true # Replace with actual repo
+git clone https://github.com/calebadeleye/alaba.git alaba || true # Replace with actual repo
 
 # ----------------------------
 # Application Setup
