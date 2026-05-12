@@ -30,7 +30,7 @@ import {
   Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { cn, formatCurrency } from '../lib/utils';
+import { cn, formatCurrency, AlabaIcon } from '../lib/utils';
 import { toast } from 'sonner';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { usePaystackPayment } from 'react-paystack';
@@ -861,6 +861,11 @@ export const RegistrationWizard: React.FC = () => {
   return (
     <div className="p-4 md:p-8 max-w-[1200px] mx-auto min-h-screen flex flex-col gap-6 md:gap-10">
       <header className="text-center space-y-3 md:space-y-4">
+        <div className="flex justify-center mb-2">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center p-0 overflow-hidden">
+            <AlabaIcon className="w-full h-full" />
+          </div>
+        </div>
         <h1 className="text-3xl md:text-5xl font-display font-black tracking-tighter text-on-surface">Deploy Your Future</h1>
         <p className="text-on-surface-variant max-w-xl mx-auto font-medium text-xs md:text-base">
           Complete the quick sequence below to instantiate your high-performance hosting instance and secure your global domain identity.
