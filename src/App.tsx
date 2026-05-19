@@ -34,6 +34,7 @@ import LoginPage from './pages/LoginPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import SuccessPage from './pages/SuccessPage';
+import SetupPage from './pages/SetupPage';
 import { type Screen, type AppMode, type Account } from './types';
 import { AccountService } from './services/api';
 import { Routes, Route, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -345,6 +346,21 @@ export default function App() {
     return 'dark';
   });
 
+  const [setupMode, setSetupMode] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    async function checkSetup() {
+      try {
+        const res = await fetch('/api/setup/status');
+        const data = await res.json();
+        setSetupMode(data.setupMode);
+      } catch (err) {
+        setSetupMode(false);
+      }
+    }
+    checkSetup();
+  }, []);
+
   useEffect(() => {
     const root = window.document.documentElement;
     root.classList.remove('light', 'dark', 'gentle');
@@ -416,8 +432,13 @@ export default function App() {
 
   const activeAccount = selectedAccountId ? accounts.find(a => String(a.id) === String(selectedAccountId)) : null;
 
-  if (isAuthChecking) {
+  if (isAuthChecking || setupMode === null) {
     return <div className="min-h-screen bg-surface flex items-center justify-center font-mono text-[10px] uppercase tracking-widest text-primary animate-pulse">Initializing Security Protocol...</div>;
+  }
+
+  // Redirect to setup if mode is true
+  if (setupMode && location.pathname !== '/setup') {
+    return <Navigate to="/setup" replace />;
   }
 
   return (
@@ -431,6 +452,7 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/success" element={<SuccessPage />} />
+      <Route path="/setup" element={<SetupPage />} />
 
       {/* Admin Protected Routes */}
       <Route path="/admin/*" element={

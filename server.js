@@ -17,6 +17,7 @@ import crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import Stripe from 'stripe';
 import AdmZip from 'adm-zip';
+import fs from 'fs';
 
 const execAsync = promisify(exec);
 const xmlParser = new XMLParser();
@@ -363,6 +364,10 @@ async function getDb() {
   if (db) return db;
   
   if (!process.env.DB_HOST) {
+    if (process.env.SETUP_MODE === 'true') {
+      console.log('[DB] Setup mode active. Waiting for database configuration...');
+      return null;
+    }
     console.warn('[DB] No MySQL credentials found in .env. Using in-memory fallback.');
     return null;
   }
@@ -373,6 +378,7 @@ async function getDb() {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      port: Number(process.env.DB_PORT) || 3306
     });
     console.log('[DB] Connected to MySQL successfully');
 
@@ -1101,6 +1107,79 @@ async function startServer() {
 
   app.use(express.json({ limit: '100mb' }));
   app.use(express.urlencoded({ limit: '100mb', extended: true }));
+
+  // --- Setup Routes ---
+  app.get('/api/setup/status', (req, res) => {
+    res.json({ 
+      setupMode: process.env.SETUP_MODE === 'true',
+      dbConfigured: !!(process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME && process.env.DB_NAME !== '')
+    });
+  });
+
+  app.post('/api/setup/db', async (req, res) => {
+    if (process.env.SETUP_MODE !== 'true') {
+      return res.status(403).json({ error: 'Setup mode is not enabled' });
+    }
+    const { host, port, user, password, database } = req.body;
+    
+    try {
+      console.log(`[Setup] Testing connection to ${host}:${port || 3306}...`);
+      const testConn = await mysql.createConnection({ 
+        host, 
+        port: Number(port) || 3306, 
+        user, 
+        password, 
+        database 
+      });
+      await testConn.end();
+      
+      const envPath = path.join(process.cwd(), '.env');
+      let envContent = '';
+      if (fs.existsSync(envPath)) {
+        envContent = fs.readFileSync(envPath, 'utf8');
+        
+        const updates = {
+          DB_HOST: host,
+          DB_PORT: port || 3306,
+          DB_USER: user,
+          DB_PASSWORD: password,
+          DB_NAME: database,
+          SETUP_MODE: 'false'
+        };
+
+        for (const [key, val] of Object.entries(updates)) {
+          const regex = new RegExp(`^${key}=.*`, 'm');
+          if (regex.test(envContent)) {
+            envContent = envContent.replace(regex, `${key}=${val}`);
+          } else {
+            envContent += `\n${key}=${val}`;
+          }
+        }
+      } else {
+        envContent = `NODE_ENV=production\nPORT=3000\nDB_HOST=${host}\nDB_PORT=${port || 3306}\nDB_USER=${user}\nDB_PASSWORD=${password}\nDB_NAME=${database}\nSETUP_MODE=false\n`;
+      }
+      
+      fs.writeFileSync(envPath, envContent);
+      
+      process.env.DB_HOST = host;
+      process.env.DB_PORT = port || 3306;
+      process.env.DB_USER = user;
+      process.env.DB_PASSWORD = password;
+      process.env.DB_NAME = database;
+      process.env.SETUP_MODE = 'false';
+      
+      db = null;
+      const initialized = await getDb();
+      if (!initialized) {
+        throw new Error('Failed to initialize database connection after saving config');
+      }
+      
+      res.json({ success: true, message: 'Database configured successfully. Setup mode disabled.' });
+    } catch (err) {
+      console.error('[Setup] Configuration failed:', err.message);
+      res.status(400).json({ error: `Connection failed: ${err.message}` });
+    }
+  });
 
   // --- Security Middleware ---
   function requireAuth(req, res, next) {
