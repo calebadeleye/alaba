@@ -2,12 +2,9 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "80:3000"
     environment:
       - NODE_ENV=production
-      - SETUP_MODE=true
-      - DB_HOST=db
-      - DB_PORT=3306
     env_file:
       - .env
     depends_on:
@@ -18,7 +15,10 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_DATABASE=alaba_cluster
+      - MYSQL_USER=alaba_user
+      - MYSQL_PASSWORD=alaba_secret_pass
+      - MYSQL_ROOT_PASSWORD=alaba_root_secret
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
