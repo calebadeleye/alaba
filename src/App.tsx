@@ -441,6 +441,11 @@ export default function App() {
     return <Navigate to="/setup" replace />;
   }
 
+  // Redirect to login if setup is complete and user tries to access /setup
+  if (!setupMode && location.pathname === '/setup') {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <>
       <TawkToScript />
