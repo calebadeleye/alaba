@@ -1,29 +1,73 @@
+version: "3.8"
+
 services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: always
+
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+
+      # Entry points
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+      # Let's Encrypt (AUTO SSL)
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
+      - "--certificatesresolvers.le.acme.email=admin@naitalk.com"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+
   app:
     build: .
-    ports:
-      - "80:3000"
-      - "3000:3000"
+    restart: always
+
     environment:
       - NODE_ENV=production
+      - PORT=3000
+
     env_file:
       - .env
+
     depends_on:
       - db
-    restart: always
+
+    labels:
+      - "traefik.enable=true"
+
+      # DOMAIN ROUTING (CHANGE THIS)
+      - "traefik.http.routers.alaba.rule=Host(`hosting.naitalk.com`)"
+      - "traefik.http.routers.alaba.entrypoints=websecure"
+      - "traefik.http.routers.alaba.tls.certresolver=le"
+
+      # INTERNAL APP PORT
+      - "traefik.http.services.alaba.loadbalancer.server.port=3000"
 
   db:
     image: mysql:8.0
     restart: always
+
     environment:
-      - MYSQL_DATABASE=alaba_cluster
-      - MYSQL_USER=alaba_user
-      - MYSQL_PASSWORD=alaba_secret_pass
-      - MYSQL_ROOT_PASSWORD=alaba_root_secret
+      MYSQL_DATABASE: alaba_cluster
+      MYSQL_USER: alaba_user
+      MYSQL_PASSWORD: alaba_secret_pass
+      MYSQL_ROOT_PASSWORD: alaba_root_secret
+
     volumes:
       - mysql_data:/var/lib/mysql
+
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
 
