@@ -9,12 +9,15 @@ services:
       - "--api.dashboard=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=alaba_default"
 
-      # Entry points
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
 
-      # Let's Encrypt (AUTO SSL)
+      # redirect HTTP → HTTPS
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
       - "--certificatesresolvers.le.acme.tlschallenge=true"
       - "--certificatesresolvers.le.acme.email=admin@naitalk.com"
       - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
@@ -26,6 +29,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./letsencrypt:/letsencrypt
+
+    networks:
+      - alaba_default
 
   app:
     build: .
@@ -43,14 +49,16 @@ services:
 
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=alaba_default"
 
-      # DOMAIN ROUTING (CHANGE THIS)
-      - "traefik.http.routers.alaba.rule=Host(`hosting.naitalk.com`)"
+      - "traefik.http.routers.alaba.rule=Host(`host.naitalk.com`)"
       - "traefik.http.routers.alaba.entrypoints=websecure"
       - "traefik.http.routers.alaba.tls.certresolver=le"
 
-      # INTERNAL APP PORT
       - "traefik.http.services.alaba.loadbalancer.server.port=3000"
+
+    networks:
+      - alaba_default
 
   db:
     image: mysql:8.0
@@ -65,10 +73,12 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
+    networks:
+      - alaba_default
 
 volumes:
   mysql_data:
+
+networks:
+  alaba_default:
+    driver: bridge

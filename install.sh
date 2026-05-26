@@ -57,7 +57,6 @@ chmod 600 letsencrypt/acme.json
 # -------------------------------
 # TRAEFIK AUTO INSTALL
 # -------------------------------
-docker rm -f traefik 2>/dev/null || true
 docker network create web || true
 
 docker run -d \
